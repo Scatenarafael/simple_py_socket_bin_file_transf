@@ -1,6 +1,8 @@
 
 import socket
 import threading
+import os
+import tqdm
 
 IP = socket.gethostbyname(socket.gethostname())
 PORT = 4456
@@ -13,6 +15,13 @@ SERVER_DATA_PATH = "server_data"
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
 
+    progress = tqdm.tqdm(
+                    range(3294501),
+                    "Receiving img.jpg",
+                    unit="B",
+                    unit_scale=True,
+                    unit_divisor=1024
+                    )
     data = b''
     while True:
         received = conn.recv(1024)
@@ -20,13 +29,18 @@ def handle_client(conn, addr):
             break
         else:
             data += received
+        progress.update(1024)
 
     print("len(data) >>> ", len(data))
     try:
         with open("uploads/received_img.jpg", 'wb') as f:
             f.write(data)
 
-        print("File Successfuly Saved!")
+        if (os.path.exists("uploads/received_img.jpg") and
+                os.path.getsize("uploads/received_img.jpg") > 0):
+            print("File Successfuly Saved!")
+        else:
+            print("Could no save file")
     except FileNotFoundError:
         print("Something went wrong")
         conn.close()
