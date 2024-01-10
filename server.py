@@ -14,14 +14,20 @@ SERVER_DATA_PATH = "server_data"
 
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
+    msg = conn.recv(SIZE).decode(FORMAT)
+
+    file_name, file_size = msg.split("@")
+    print("file_name: ", file_name)
+    print("file_size: ", file_size)
 
     progress = tqdm.tqdm(
-                    range(3294501),
+                    range(int(file_size)),
                     "Receiving img.jpg",
                     unit="B",
                     unit_scale=True,
                     unit_divisor=1024
                     )
+
     data = b''
     while True:
         received = conn.recv(1024)
@@ -33,13 +39,15 @@ def handle_client(conn, addr):
 
     print("len(data) >>> ", len(data))
     try:
-        with open("uploads/received_img.jpg", 'wb') as f:
+        with open(f"uploads/received_{file_name}", 'wb') as f:
             f.write(data)
 
-        if (os.path.exists("uploads/received_img.jpg") and
-                os.path.getsize("uploads/received_img.jpg") > 0):
+        if (os.path.exists(f"uploads/received_{file_name}") and
+                os.path.getsize(f"uploads/received_{file_name}") > 0):
+            conn.send("next".encode(FORMAT))
             print("File Successfuly Saved!")
         else:
+            conn.send("finished".encode(FORMAT))
             print("Could no save file")
     except FileNotFoundError:
         print("Something went wrong")

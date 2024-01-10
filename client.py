@@ -13,13 +13,10 @@ def handle_send_file(
         files_folder, file_name, client):
 
     file_name_path = os.path.join(files_folder, file_name)
-   
-    # client.send(file_name.encode(FORMAT))
 
     file_size = os.path.getsize(file_name_path)
-    # print("filesize >>> ", file_size)
-
-    # client.send(str(file_size).encode(FORMAT))
+    
+    client.send(f"{file_name}@{str(file_size)}".encode(FORMAT))
 
     with open(file_name_path, 'rb') as f:
         data = f.read(file_size)
@@ -29,12 +26,22 @@ def handle_send_file(
 def main():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(ADDR)
+    files = os.listdir("files")
 
     # for file in os.listdir("files"):
     #     handle_send_file("files", file, client)
-    
-    handle_send_file("files", "3d_person_vectors.jpg", client)
+    i = 0
 
+    handle_send_file("files", files[i], client)
+
+    while True:
+        msg = client.recv(SIZE).decode(FORMAT)
+        print("while >> msg:", msg)
+        if msg == "next" and i+1 < len(files):
+            i += 1
+            handle_send_file("files", files[i], client)
+        else:
+            break
     print("Disconnected from the server.")
     client.close()
 
