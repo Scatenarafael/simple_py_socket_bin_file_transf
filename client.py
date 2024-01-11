@@ -7,7 +7,16 @@ PORT = 4456
 ADDR = (IP, PORT)
 FORMAT = "utf-8"
 SIZE = 1024
-HEADER_SIZE = 128
+HEADER_SIZE = 256
+
+
+def wait_until(somepredicate, timeout, period=0.25, *args, **kwargs):
+    mustend = time.time() + timeout
+    while time.time() < mustend:
+        if somepredicate:
+            return True
+        time.sleep(period)
+    return False
 
 
 def handle_send_file(
@@ -34,7 +43,10 @@ def handle_send_file(
     with open(file_name_path, 'rb') as f:
         data += f.read(file_size)
     client.send(data)
-    time.sleep(10)
+    # time.sleep(15)
+    msg = client.recv(4).decode(FORMAT)
+    wait_until(msg == "next", 15)
+    print("msg >>> ", msg)
 
 
 def main():

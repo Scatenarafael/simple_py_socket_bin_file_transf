@@ -11,7 +11,7 @@ ADDR = (IP, PORT)
 SIZE = 1024
 FORMAT = "utf-8"
 SERVER_DATA_PATH = "server_data"
-HEADER_SIZE = 128
+HEADER_SIZE = 256
 
 
 def receive_file(conn, addr):
@@ -52,6 +52,7 @@ def receive_file(conn, addr):
                         os.path.getsize(f"uploads/received_{file_name}") > 0):
                     t4 = time.perf_counter()
 
+                    conn.send("next".encode(FORMAT))
                     print("time to write file >>> ", (t4 - t3))
                     print("File Successfuly Saved!")
                 else:
