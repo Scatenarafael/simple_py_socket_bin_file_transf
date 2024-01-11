@@ -34,7 +34,7 @@ def handle_send_file(
     with open(file_name_path, 'rb') as f:
         data += f.read(file_size)
     client.send(data)
-    time.sleep(8)
+    time.sleep(10)
 
 
 def main():
@@ -42,11 +42,11 @@ def main():
     client.connect(ADDR)
     files = os.listdir("files")
     print('files >> ', files)
-    # for file in os.listdir("files"):
-    #     handle_send_file("files", file, client)
-    handle_send_file("files", files[0], client)
-    handle_send_file("files", files[1], client)
-    handle_send_file("files", files[2], client)
+    for file in os.listdir("files"):
+        handle_send_file("files", file, client)
+    # handle_send_file("files", files[0], client)
+    # handle_send_file("files", files[1], client)
+    # handle_send_file("files", files[2], client)
 
     print("Disconnected from the server.")
     client.close()
