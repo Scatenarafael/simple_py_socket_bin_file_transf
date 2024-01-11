@@ -27,7 +27,7 @@ def receive_file(conn, addr):
                 f"Receiving {file_name}",
                 unit="B",
                 unit_scale=True,
-                unit_divisor=1024,
+                # unit_divisor=1024,
                 total=int(file_size)
             )
 
@@ -41,6 +41,7 @@ def receive_file(conn, addr):
 
             t2 = time.perf_counter()
 
+            print("\n")
             print("time receive file >>> ", (t2 - t1))
             print("len(data) >>> ", len(data))
             try:
